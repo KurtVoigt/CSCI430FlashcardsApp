@@ -27,8 +27,6 @@ class card
         std::string getSentence() const{return sentence;}
         double getWeight() const {return weight;}
         void setWeight(double w){weight = w; return;}
-        void displayQuestion();
-        void displayAnswer(bool userAnswer);
 
 };
 

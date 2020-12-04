@@ -1,6 +1,4 @@
-//implement deleting a deck
-//rename a deck
-//edit a deck
+
 
 #include "deck.h"
 
@@ -61,8 +59,7 @@ deck::deck(std::string deckName){
   this->readDeck();
 }
 /*creation of a new deck from scratch, will make a new entry on database
-for the deck as well as create its cards, recording them on the database
-and pushing them onto the object's prio queue.
+for the deck as well as create the necessary tables on the DB if they don't exist
 this can also be used to add new cards into a deck by passing in a name that
 is already in existence, will have constructed a new object though*/
 deck::deck(std::string newName, bool flag){
@@ -115,36 +112,6 @@ deck::deck(std::string newName, bool flag){
 
     rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
 
-    //now we must create all the cards for this deck and add each card to the database
-    //console for now
-    //std::string exit = "{";
-    //std::cout << "We will now create the cards for your deck." << std::endl;
-    /*while(exit!= "q" && exit!="Q"){
-        std::string question;
-        std::string answer;
-        std::string sentence;
-        std::cout << "Please enter in the question (front side) of your card" << std::endl << '>';
-        std::getline(std::cin ,question);
-        std::cout << std::endl << "Please enter in the answer (back side) of your card" << std::endl << '>';
-        std::getline(std::cin, answer);
-        std::cout << std::endl << "You may now enter an optional example sentence, this will be displayed with the question" << std::endl << '>';
-        std::getline(std::cin, sentence);
-
-        //pushes card into main memory
-        card c = card(question, answer, sentence);
-        deckInstance.push(c);
-
-        //we have now created a card that is in main memory, push it into the database so that we 
-        //only have to update the weights on exit
-        sql = "INSERT INTO CARDS ('ID', 'WEIGHT', 'DATA', 'ANSWER', 'SENTENCE', 'DECK') VALUES (NULL, '"+std::to_string(c.getWeight())+
-        "', '"+c.getData()+"', '"+c.getAnswer()+"', '"+c.getSentence()+"', '"+newName+"');";
-        rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
-        //std::cout << rc <<std::endl;
-        //card is now entered into database ask user if he wants to add another one
-        std::cout << "Card completed, add another? (y=yes, q=quit)" << std::endl << '>';
-        std::getline(std::cin, exit);
-        
-    }*/
     rc = sqlite3_close(db);
 
 }
@@ -152,7 +119,7 @@ deck::deck(std::string newName, bool flag){
 //pushes a card into the decks priority queue
 void deck::pushCard(card c){
   deckInstance.push(c);
-  std::cout << "pushed "<<c.getData() <<" with weight " <<c.getWeight() <<std::endl;
+  //std::cout << "pushed "<<c.getData() <<" with weight " <<c.getWeight() <<std::endl;
 }
 
 
@@ -187,14 +154,14 @@ void deck::updateDeck(){
     char *zErrMsg = 0;
     int rc;
     std::string sql;
-
+    double avg = 0.0;
+    int size = deckInstance.size();
     rc = sqlite3_open(str(DBNAME), &db);
 
     if( rc ) {
       std::cout << "DB Error: " << sqlite3_errmsg(db) << std::endl;
     } 
-    sql = "UPDATE DECKS SET WEIGHT = '"+std::to_string(this->weight)+"' WHERE NAME = '"+this->name+"';";
-    rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
+
     //update cards
     while(!deckInstance.empty()){
         card c = deckInstance.top();
@@ -203,13 +170,16 @@ void deck::updateDeck(){
         sql = "UPDATE CARDS SET WEIGHT = '"+std::to_string(c.getWeight())+"' WHERE DECK = '"+this->name+"' AND DATA = '"+c.getData()+"' AND ANSWER = '"
         +c.getAnswer()+"';";
         rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
+        avg = avg + c.getWeight();
     }
+    avg = avg/size;
+    sql = "UPDATE DECKS SET WEIGHT = '"+std::to_string(avg)+"' WHERE NAME = '"+this->name+"';";
+    rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
     rc = sqlite3_close(db);
 }
 
 /*
-Given the unique deck name, reads a deck into main memory from
-the database. returns a deck object.
+Using the decks name, build the deck from the database
 */
 void deck::readDeck(){
   std::string sql;
@@ -246,7 +216,10 @@ void deck::readDeck(){
       "FOREIGN KEY(DECK) REFERENCES DECKS(NAME));";*/
 
 
-//Should be able to review deck even if all cards are at 1.0
+/*
+ *Returns the a pointer to the card at the top of the prio queue
+ * for the purpose of passing it through the gui
+ */
 
 card* deck::displayDeck(){
 
@@ -266,6 +239,11 @@ card* deck::displayDeck(){
 }
 
 
+/*
+ * Returns a vector of answers from the corresponding deck with the name
+    name. For the purposes of creating random answers on the review deck funtion
+
+ */
 std::vector<std::string> deck::randomAnswers(std::string name){
     std::vector<std::string> ret;
     std::vector<std::string> *ptr = &ret;

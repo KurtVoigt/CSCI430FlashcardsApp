@@ -7,6 +7,10 @@
 #include "newDeckFrame.h"
 #include "startFrame.h"
 class startFrame;
+/*
+ * FlashCards, serves as the main window of the application that all other frames
+ * will be added to
+ */
 namespace Ui {
 class FlashCards;
 }

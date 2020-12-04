@@ -4,6 +4,14 @@
 #include <QFrame>
 #include "questionFrame.h"
 #include "loadDeckFrame.h"
+/*
+ * answerFrame, this class displays the answer to
+ * the current card and stores user feedback
+ * to update the weights of the currently displayed card
+ * when feedback button is pressed, sends signal to parent frame to update
+ * deck with that feedback and closes itself
+ */
+
 namespace Ui {
 class answerFrame;
 }

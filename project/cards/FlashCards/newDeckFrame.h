@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include "flashcards.h"
 //creates a new deck and stores it in the database
+//when deck is saved, puts a new start frame on to parent frame (FlashCards) and deletes itself
 class startFrame;
 namespace Ui {
 class NewDeckFrame;

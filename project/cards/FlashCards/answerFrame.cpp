@@ -16,6 +16,8 @@ answerFrame::~answerFrame()
 {
     delete ui;
 }
+//these buttons give user feedback to parent frame which signals
+//it to update the deck and put a question frame or start frame on to FlashCards
 
 void answerFrame::setAnswerText(QString s){
     ui->answerLabel->setText(s);

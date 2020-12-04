@@ -3,6 +3,12 @@
 
 #include <QFrame>
 #include "flashcards.h"
+
+/*
+ * editDeckFrame, this class allows the user to add cards to a deck, delete
+ * cards from a deck, and delete a deck entirely
+ *
+ */
 namespace Ui {
 class editDeckFrame;
 }

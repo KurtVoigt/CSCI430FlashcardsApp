@@ -6,6 +6,12 @@
 #include "answerFrame.h"
 #include "loadDeckFrame.h"
 #include <QDebug>
+/*
+ * questionFrame, this calss displays the question and sentence
+ * of the current card and allows the user to pick from four answers, three of which are randomly generated
+ * from other answers in the deck. On selecting the right answer, puts a new answer frame on to the
+ * parent frame(loadDeckFrame) and deletes itself
+ */
 class card;
 namespace Ui {
 class questionFrame;

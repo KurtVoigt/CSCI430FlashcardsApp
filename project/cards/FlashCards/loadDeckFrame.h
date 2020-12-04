@@ -13,6 +13,14 @@
 class startFrame;
 class questionFrame;
 class answerFrame;
+
+/*
+ * loadDeckFrame, this frame is used to select a deck that you would like to
+ * review. If the user selects a deck to review,It will clear its UI and acts as the parent (in the qt sense) of both questionFrame and
+ * answerFrame so that these two children can both access the pointer to the card
+ * that is currently being reviewed. else the user goes back to the main menu, which will delete
+ * this loadDeckFrame and put a new startframe on to FlashCards.
+ */
 namespace Ui {
 class loadDeckFrame;
 }
@@ -36,6 +44,7 @@ private slots:
 
 private:
     Ui::loadDeckFrame *ui;
+
     //std::vector<char*> *deckNames;
     startFrame *sf;
     QMainWindow *par;

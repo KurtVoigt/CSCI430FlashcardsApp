@@ -28,61 +28,6 @@ void card::updateWeight(assesments rating){
 }
   
 
-//displays question, right now to output stream but modify to GUI
-void card::displayQuestion(){
-    std::string attempt = "";
-    std::cout << data << std::endl << '>';
-    bool userAnswer = false;
-    for(int i=1; i <4; i++){
-        std::cout << data << std::endl << '>';
-        std::cin >> attempt;
-        if(attempt == answer){
-            userAnswer = true;
-            break;
-        }
-        else{
-            std::cout << "Incorrect. Attempts remaning: "<< 3-i << std::endl << '>';
-        }
-    }
-     card::displayAnswer(userAnswer);
-
-}
-    //if parameter is true answer was correct, get feedback at this stage and updateWeight
-void card::displayAnswer(bool userAnswer){
-    std::string rating;
-    assesments assesment;
-    if(userAnswer){
-        std::cout << "Correct, how do you feel about this card?" << std::endl << "(Great, good, neutral, bad, very bad)" << std::endl << '>';
-        std::cin >> rating;
-        if(rating == "great")
-            assesment = great;
-        if(rating == "good")
-            assesment = good;
-        if(rating == "neutral")
-            assesment = neutral;
-        if(rating == "bad")
-            assesment = bad;
-        if(rating == "terrible")
-            assesment = terrible;
-        card::updateWeight(assesment);
-    }
-   else{
-        std::cout << "Incorrect, how do you feel about this card?" << std::endl << "(Great, good, neutral, bad, very bad)" << std::endl << '>';
-        std::cin >> rating;
-        if(rating == "great")
-            assesment = great;
-        if(rating == "good")
-            assesment = good;
-        if(rating == "neutral")
-            assesment = neutral;
-        if(rating == "bad")
-            assesment = bad;
-        if(rating == "terrible")
-            assesment = terrible;
-        card::updateWeight(assesment);
-    }
-        
-}
 
 
 

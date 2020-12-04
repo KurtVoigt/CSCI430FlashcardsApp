@@ -9,6 +9,11 @@
 class NewDeckFrame;
 class loadDeckFrame;
 class editDeckFrame;
+/*
+ * startFrame, the main menu of the application that gives access to
+ * all the functionallity. Has empty pointers to each frame that it would need
+ * to put on to its parent(parent in the qt sense) window (FlashCards object)
+ */
 namespace Ui {
 class startFrame;
 }

@@ -18,7 +18,7 @@ class deck{
         std::string name;
         //construct deck from information already in database, used by readDeck()
 
-       // friend void loadDeckFrame::displayQuestion();
+
     public:
         deck(std::string deckName);
         std::string getName(){return name;}

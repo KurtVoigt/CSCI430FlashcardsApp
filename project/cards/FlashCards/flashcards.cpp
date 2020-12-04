@@ -16,27 +16,7 @@ FlashCards::~FlashCards()
 }
 
 
-/*void FlashCards::on_pushButton_clicked()
-{
-    ndf = new NewDeckFrame(this);
-    ui->pushButton->hide();
-    ui->gridLayout->addWidget(ndf);
-    //ndf->show();
-}
-
-void FlashCards::displayFirstScreen(){
-    std::cout << "hello";
-    //ndf->close();
-    //ui->gridLayout->removeWidget(ndf);
-    ui->pushButton->show();
-   // ndf->close();
-}
-
-void FlashCards::on_pushButton_2_clicked()
-{
-   this->close();
-}*/
-
+//puts start frame on to main window
 void FlashCards::on_startButton_clicked()
 {
     sf = new startFrame(this);

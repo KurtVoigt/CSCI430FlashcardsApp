@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = FlashCards
 TEMPLATE = app
 LIBS += -lsqlite3
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -w
 
 
 SOURCES += main.cpp\

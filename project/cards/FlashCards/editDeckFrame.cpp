@@ -20,7 +20,7 @@ editDeckFrame::editDeckFrame(QMainWindow *parent) :
 }
 
 
-
+//when a deck is selected, allows functionallity of adding a card to the selected deck
 void editDeckFrame::cardEditState(bool b){
     ui->answerLineEdit->setEnabled(b);
     ui->addCardButton->setEnabled(b);
@@ -33,6 +33,8 @@ editDeckFrame::~editDeckFrame()
 {
     delete ui;
 }
+
+//adds a card to the currently selected deck
 void editDeckFrame::on_addCardButton_clicked()
 {
     QString data = ui->questionLineEdit->text();
@@ -45,8 +47,12 @@ void editDeckFrame::on_addCardButton_clicked()
     ui->sentenceLineEdit->clear();
 }
 
+//changes the state of the window depending on whether a deck is selected or not
 void editDeckFrame::on_selectDeckButton_clicked()
 {
+    if(ui->deckList->selectedItems().size() == 0 && ui->selectDeckButton->text() != "Back to Deck Selection")
+        return;
+
     if(ui->selectDeckButton->text() == "Back to Deck Selection"){
         ui->deckList->clear();
         ui->selectDeckButton->setText("Select Deck");
@@ -69,8 +75,12 @@ void editDeckFrame::on_selectDeckButton_clicked()
 
 }
 
+//either deletes the selected card or the selected deck
 void editDeckFrame::on_deleteCardButton_clicked()
 {
+    if(ui->deckList->selectedItems().size() == 0)
+        return;
+
     if(ui->selectDeckButton->text() == "Back to Deck Selection"){//in a deck, delete specified card
 
          QString s = ui->deckList->currentItem()->text().section('|',0,0);
@@ -85,6 +95,7 @@ void editDeckFrame::on_deleteCardButton_clicked()
     }
 }
 
+//goes back to main menu
 void editDeckFrame::on_mainMenuButton_clicked()
 {
     FlashCards* hopeThisWorks = qobject_cast<FlashCards*>(par);
@@ -94,6 +105,7 @@ void editDeckFrame::on_mainMenuButton_clicked()
     hopeThisWorks->setCentralWidget(sf);
 }
 
+//gets all deck namesfor the purposes of displaying them on the window
 std::vector<std::string> editDeckFrame::getDeckNames(){
     std::string sql;
     int rc;
@@ -114,6 +126,7 @@ std::vector<std::string> editDeckFrame::getDeckNames(){
     return ret;
 }
 
+//gets cards for a selected deck
 std::vector<card> editDeckFrame::getCards(QString deckName){
     std::string sql;
     int rc;
@@ -137,7 +150,7 @@ std::vector<card> editDeckFrame::getCards(QString deckName){
 
 
 
-
+//adds vector of cards to the display
 void editDeckFrame::populateListWithCards(std::vector<card> cv){
     QString x = " | ";
     for(std::size_t i = 0; i < cv.size(); i++){
@@ -147,6 +160,7 @@ void editDeckFrame::populateListWithCards(std::vector<card> cv){
     }
 }
 
+//adds deck names to the display
 void editDeckFrame::populateListWithDecks(){
     for(std::size_t i = 0; i < deckNames.size(); i++){
        // QListWidgetItem * label = new QListWidgetItem;
@@ -156,6 +170,7 @@ void editDeckFrame::populateListWithDecks(){
     }
 }
 
+//callback function for getting cards from database
 int editcardcallback(void *ret, int argc, char **argv, char **azColName){
     std::vector<card> *cards = reinterpret_cast< std::vector<card> *>(ret);
     //order is WEIGHT, DATA, ANSWER, SENTENCE
@@ -170,7 +185,7 @@ int editcardcallback(void *ret, int argc, char **argv, char **azColName){
 
 
 
-
+//deletes card from the database
 void editDeckFrame::deleteCard(QString cardName, QString deckName){
     std::string sql;
     int rc;
@@ -207,7 +222,7 @@ void editDeckFrame::deleteCard(QString cardName, QString deckName){
 
 
 
-
+//inserts card into database
 void editDeckFrame::insertCard(card c){
     sqlite3 *db;
     char *zErrMsg = 0;

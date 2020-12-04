@@ -3,6 +3,7 @@
 #include "flashcards.h"
 #include <QDebug>
 #include <time.h>
+int deckNamescallback(void *ret, int argc, char **argv, char **azColName);
 loadDeckFrame::loadDeckFrame(QMainWindow *parent) :
     par(parent),
     QFrame(parent),
@@ -27,14 +28,19 @@ loadDeckFrame::~loadDeckFrame()
     delete ui;
 }
 
+//final step of a "review card process", recieves the card pointer from
+//an answer frame, updates its weight based off of the user feedback
+//frees the memory of the card, inserts the card into the decks prio queue,
+//and calls display question, which will display the next "review card process"
+//or go back to the main menu
 void loadDeckFrame::updateCard(card *c, assesments a){
     c->updateWeight(a);
     displayDeck->pushCard(*c);
-    qDebug() << c->getWeight();
     delete c;
     displayQuestion();
 }
 
+//clears the UI and puts frame on to this loadDeckFrame
 void loadDeckFrame::graftQAFrame(QFrame *f){
     QLayoutItem *widge;
     while( (widge = ui->verticalLayout->takeAt(0)) != NULL){
@@ -44,54 +50,31 @@ void loadDeckFrame::graftQAFrame(QFrame *f){
     ui->verticalLayout->addWidget(f);
 }
 
-int deckNamescallback(void *ret, int argc, char **argv, char **azColName){
-    std::vector<std::string> *names = reinterpret_cast<std::vector<std::string> *>(ret);
-    names->push_back(std::string(argv[0]));
-    return 0;
-}
 
-//returns all of the deck names in a vector of strings
-std::vector<std::string> loadDeckFrame::getDeckNames(){
-    std::string sql;
-    int rc;
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    //std::vector<char*> *ret;
-    std::vector<std::string> ret;
-    std::vector<std::string> *ptr = &ret;
 
-    rc = sqlite3_open(str(DBNAME), &db);
-    if(rc) {//if rc == 1 that means that whatever sqlite operation failed, 0 is good!
-      std::cerr << "DB Error: " << sqlite3_errmsg(db) << std::endl;
-    }
-    sql = "SELECT NAME FROM 'DECKS';";
-
-    rc = sqlite3_exec(db, sql.c_str(), deckNamescallback, ptr, &zErrMsg);
-    //have to error check is there are no decks?
-    return ret;
-}
-
+//starts the review deck process on a selected deck
 void loadDeckFrame::on_displayDeckButton_clicked()
 {
+    if(ui->deckList->selectedItems().size() == 0)
+        return;
+    else{
     QListWidgetItem *item = ui->deckList->currentItem();
     //qDebug() << "Selected " + item->text();
     displayDeck = new deck(item->text().toStdString());
-    //deck is now loaded into main memory, time to display question
-   /* ui->backButton->close();
-    ui->deckList->close();
-    ui->displayDeckButton->close();
-    ui->label->close();*/
-    //delete ui->verticalLayout;
-
     displayQuestion();
+    }
 
 
 }
 
 
-//refactor d to displaydeck member
+/*
+ * creates a pointer to the card at the top of the decks prio queue
+ * if the weight of the card is not one, then it will start the review card process
+ */
 void loadDeckFrame::displayQuestion(){
-    deck * d = displayDeck;
+
+    //deck * d = displayDeck;
     card *c = displayDeck->displayDeck();
     std::vector<std::string> answers = displayDeck->randomAnswers(displayDeck->getName());
     std::vector<int> buttons{0,1,2,3};
@@ -179,4 +162,31 @@ void loadDeckFrame::on_backButton_clicked()
     sf = new startFrame(par);
     this->close();
     par->setCentralWidget(sf);
+}
+
+//returns all of the deck names in a vector of strings
+std::vector<std::string> loadDeckFrame::getDeckNames(){
+    std::string sql;
+    int rc;
+    sqlite3 *db;
+    char *zErrMsg = 0;
+    //std::vector<char*> *ret;
+    std::vector<std::string> ret;
+    std::vector<std::string> *ptr = &ret;
+
+    rc = sqlite3_open(str(DBNAME), &db);
+    if(rc) {//if rc == 1 that means that whatever sqlite operation failed, 0 is good!
+      std::cerr << "DB Error: " << sqlite3_errmsg(db) << std::endl;
+    }
+    sql = "SELECT NAME FROM 'DECKS';";
+
+    rc = sqlite3_exec(db, sql.c_str(), deckNamescallback, ptr, &zErrMsg);
+    //have to error check is there are no decks?
+    return ret;
+}
+
+int deckNamescallback(void *ret, int argc, char **argv, char **azColName){
+    std::vector<std::string> *names = reinterpret_cast<std::vector<std::string> *>(ret);
+    names->push_back(std::string(argv[0]));
+    return 0;
 }
