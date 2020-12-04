@@ -1,1 +1,0 @@
-g++ -std=c++11 card.cpp deck.cpp main.cpp -l sqlite3
